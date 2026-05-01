@@ -18,7 +18,7 @@ export default TemplateEvent<"clientReady">(async (client) => {
   const filesToRegister = readdirSync(registersFolder, {
     recursive: true,
     encoding: "utf-8",
-  });
+  }).filter((f) => f.endsWith(".ts"));
 
   let parsed: any[] = [];
 

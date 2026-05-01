@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { Client, Partials, type ClientEvents } from "discord.js";
 import loadDirectoryList from "./utils/loadDirectoryList";
-import path from "node:path";
+import path from "path";
 import type { TemplateEvent } from "./utils/typers";
 
 const client = new Client({
