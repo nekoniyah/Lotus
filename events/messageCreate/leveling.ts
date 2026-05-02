@@ -5,6 +5,7 @@ import db from "../../utils/db";
 import { guilds, levelRoles, levels } from "../../src/db/schema";
 import { and, eq } from "drizzle-orm";
 import * as embeds from "../../utils/embeds";
+import registerMember from "../../utils/registerMember";
 
 export default TemplateEvent<"messageCreate">(async (message) => {
   if (message.author.bot) return;
@@ -13,18 +14,13 @@ export default TemplateEvent<"messageCreate">(async (message) => {
   const guildConfig = db
     .select()
     .from(guilds)
-    .where(eq(guilds.levelingChannelId, message.guild.id))
+    .where(eq(guilds.id, message.guild.id))
     .get();
 
   if (!guildConfig) return;
 
-  let profile = db
-    .select()
-    .from(levels)
-    .where(and(eq(levels.userId, message.author.id)))
-    .get();
-
-  if (!profile) return;
+  const member = await message.guild.members.fetch(message.author);
+  let profile = await registerMember(member);
 
   // Give experience based on length of the message (divided by 2, rounded down)
   let experienceToGive = 1;
@@ -45,7 +41,6 @@ export default TemplateEvent<"messageCreate">(async (message) => {
     .where(eq(levelRoles.guildId, message.guild.id))
     .all();
 
-  const member = await message.guild.members.fetch(message.author);
   for (let lrg of allLevelRoles) {
     if (level >= lrg.level) {
       const role = await message.guild.roles.fetch(lrg.roleId);

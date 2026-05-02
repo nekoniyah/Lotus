@@ -16,14 +16,11 @@ export default async function registerMember(member: GuildMember) {
     .get();
 
   if (!levelProfile) {
-    const postThing = await db
+    levelProfile = db
       .insert(levels)
       .values({ guildId: member.guild.id, userId: member.user.id })
-      .returning();
-
-    levelProfile = postThing.find(
-      (f) => f.guildId === member.guild.id && f.userId === member.user.id,
-    )!;
+      .returning()
+      .get();
   }
 
   let profile = db
@@ -33,16 +30,15 @@ export default async function registerMember(member: GuildMember) {
     .get();
 
   if (!profile) {
-    const postThing = await db
+    profile = db
       .insert(wallets)
       .values({
         guildId: member.guild.id,
         userId: member.user.id,
         amount: 0,
       })
-      .returning();
-
-    profile = postThing.find((f) => f.guildId === member.guild.id)!;
+      .returning()
+      .get();
   }
 
   return {

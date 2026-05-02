@@ -1,7 +1,7 @@
 import type { ChatInputCommandInteraction } from "discord.js";
 import embeds from "../../utils/embeds";
 import db from "../../utils/db";
-import { levelRoles } from "../../src/db/schema";
+import { guilds, levelRoles } from "../../src/db/schema";
 import { eq } from "drizzle-orm";
 
 const leveling = async (interaction: ChatInputCommandInteraction) => {
@@ -43,6 +43,15 @@ const leveling = async (interaction: ChatInputCommandInteraction) => {
     const id = interaction.options.getString("id", true);
 
     await db.delete(levelRoles).where(eq(levelRoles.roleId, id));
+  }
+
+  if (sc === "channel") {
+    const channel = interaction.options.getChannel("channel", true);
+
+    await db
+      .update(guilds)
+      .set({ levelingChannelId: channel.id })
+      .where(eq(guilds.id, interaction.guildId!));
   }
 
   await interaction.reply({

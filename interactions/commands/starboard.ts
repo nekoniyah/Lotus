@@ -21,13 +21,11 @@ const starboard = async (interaction: ChatInputCommandInteraction) => {
       .update(starboards)
       .set({ channelId: channel.id, goal: minimum_stars });
   } else {
-    await db
-      .insert(starboards)
-      .values({
-        channelId: channel.id,
-        guildId: interaction.guildId!,
-        goal: minimum_stars,
-      });
+    await db.insert(starboards).values({
+      channelId: channel.id,
+      guildId: interaction.guildId!,
+      goal: minimum_stars,
+    });
   }
 
   await interaction.reply({

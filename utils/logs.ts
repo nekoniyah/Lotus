@@ -1,18 +1,19 @@
-import {
-  Client,
-  Guild,
-  GuildChannel,
-  GuildMember,
-  TextChannel,
-} from "discord.js";
-export let channel: TextChannel | null = null;
-let client: Client<true> | null = null;
+import { GuildMember, TextChannel } from "discord.js";
+
 import fs, { createReadStream } from "fs";
 import path from "path";
 import dayjs from "dayjs";
 import embeds from "./embeds";
+import db from "./db";
+import { guilds } from "../src/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function LogTicketCreate(c: TextChannel, member: GuildMember) {
+  const g = db.select().from(guilds).where(eq(guilds.id, c.guildId)).get();
+  if (!g || !g.logChannelId) return;
+
+  const channel = (await c.guild.channels.fetch(g.logChannelId)) as TextChannel;
+
   const embed = embeds
     .base()
     .setTitle(`Ticket Created`)
@@ -24,10 +25,15 @@ export async function LogTicketCreate(c: TextChannel, member: GuildMember) {
       },
     );
 
-  channel!.send({ embeds: [embed] });
+  channel.send({ embeds: [embed] });
 }
 
 export async function LogTicketDelete(c: TextChannel, member: GuildMember) {
+  const g = db.select().from(guilds).where(eq(guilds.id, c.guildId)).get();
+  if (!g || !g.logChannelId) return;
+
+  const channel = (await c.guild.channels.fetch(g.logChannelId)) as TextChannel;
+
   const embed = embeds
     .base()
     .setTitle(`Ticket Deleted`)
@@ -53,7 +59,7 @@ export async function LogTicketDelete(c: TextChannel, member: GuildMember) {
 
   fs.writeFileSync(p, res.reverse().join(","));
 
-  await channel!.send({ embeds: [embed], files: [createReadStream(p)] });
+  await channel.send({ embeds: [embed], files: [createReadStream(p)] });
 
   fs.rmSync(p);
 }

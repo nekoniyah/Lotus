@@ -35,7 +35,7 @@ export default TemplateEvent<"clientReady">(async (client) => {
     }
   }
 
-  rest.put(
+  await rest.put(
     Routes.applicationGuildCommands(
       client.application.id,
       process.env.GUILD_ID!,

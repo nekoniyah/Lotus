@@ -24,7 +24,7 @@ export default TemplateEvent<"messageCreate">(async (message) => {
   if (rand <= 1) {
     const type = Math.random();
 
-    if (type > 0.4) {
+    if (type > 0.49) {
       // Mine
 
       if (profile.amount === 0) return;

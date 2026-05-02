@@ -33,8 +33,8 @@ export default TemplateEvent<"interactionCreate">(async (interaction) => {
       path.join(interactionsFolderpath, "commands"),
     );
 
-    const fpath = interactionFiles.find((f) =>
-      f.endsWith(`${interaction.commandName}.ts`),
+    const fpath = interactionFiles.find(
+      (f) => f == `${interaction.commandName}.ts`,
     );
 
     if (fpath) {
